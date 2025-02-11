@@ -1,0 +1,48 @@
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    privileged: false
+    restart: always
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  test-deploy-proj:
+    image: wackoobserver/test_deploy_proj:1.0
+    container_name: test-deploy-proj
+    command: sh run_server.sh
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq:5672"
+      POSTGRES_NAME: ${POSTGRES_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    links:
+      - postgres-db
+    env_file:
+      - .env
