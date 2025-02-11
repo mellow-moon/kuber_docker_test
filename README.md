@@ -32,7 +32,9 @@ UTC [1] LOG:  database system is ready to accept connections
 Starting development server at http://0.0.0.0:8000/
 ```
 
-Для проверки работоспособности приложения можно перейти по адресу http://localhost:8000/swagger/. Используя POST запрос, можно создавать новые задачи.
+Для проверки работоспособности приложения можно перейти по адресу http://localhost:8000/swagger/.
+
+Используя POST запрос, можно создавать новые задачи.
 С помощью двух других GET запросов можно получать информацию обо всех существующих задачах и о конкретной задаче по идентификатору.
 
 Для проверки работоспособности RabbitMQ можно перейти по адресу http://localhost:15672/. Username - guest, password - guest.
@@ -59,6 +61,7 @@ minikube addons enable ingress
 kubectl apply -f postgres_manifest/
 ```
 и дождаться, пока statefulset и service станут активными (проверить можно при помощи kubectl get all).
+
 Подключение к БД можно проверить при помощи любого клиента.
 Host - результат команды minikube ip, user - postgres, password - postgres, default database - tasks, port - 30000.
 
